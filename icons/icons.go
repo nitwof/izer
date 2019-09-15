@@ -1,14 +1,27 @@
 package icons
 
-import "path/filepath"
+var fontsMap = map[string]func(string) Icon{
+	"nerd": GetNerdIcon,
+}
+var supportedFonts = []string{
+	"nerd",
+}
 
-//go:generate gomplate -d map=map.json -f map.go.tmpl -o map.go
+// Icon represents icon struct
+type Icon struct {
+	Symbol string
+	Color  uint8
+}
 
-// Get returns icon by filetype
-func Get(filename string) string {
-	ext := filepath.Ext(filename)
-	if icon, ok := iconsMap[ext]; ok {
-		return icon
+// SupportedFonts returns list of supported fonts
+func SupportedFonts() []string {
+	return supportedFonts
+}
+
+// GetIconFunc returns GetIconFunc by font
+func GetIconFunc(font string) func(string) Icon {
+	if fn, ok := fontsMap[font]; ok {
+		return fn
 	}
-	return "\uE612"
+	return nil
 }
