@@ -1,0 +1,18 @@
+{{- with (datasource "data") -}}
+unknown
+somedir/test/unknown
+.unknown
+somedir/test/.unknown
+file.unknown
+somedir/test/file.unknown
+{{- range $key := (.filetypes | coll.Keys | coll.Sort) }}
+{{ $key }}
+somedir/test/{{ $key }}
+
+{{- if $key | strings.HasPrefix "." }}
+file{{ $key }}
+somedir/test/file{{ $key }}
+{{- end }}
+
+{{- end }}
+{{- end }}

@@ -3,47 +3,63 @@ GENICONS_DIR = icons
 ICONS_TEMPLATE = icons/icons.go.tmpl
 BINARY = iconizer
 TEST_DIR = test
-FIXTURES_DIR = test/fixtures
+TESTINPUTS_TEMPLATE = test/fixtures/input.tmpl
+TESTINPUTS_DIR = test/fixtures
+TESTGOLDENS_DIR = test/fixtures
 
 GO = go
-GOMPLATE = gomplate
 GOFMT = gofmt
+GOMPLATE = gomplate
 LINTER = golangci-lint
 BENCHTIME = 10x
 
 MAPPINGS = $(wildcard $(MAPPINGS_DIR)/*_map.json)
 GENICONS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(GENICONS_DIR)/%_icons.go)
+TESTINPUTS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(TESTINPUTS_DIR)/%.input)
+TESTGOLDENS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(TESTGOLDENS_DIR)/%.golden) \
+							$(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(TESTGOLDENS_DIR)/%_color.golden)
 
 default: build
 
 $(GENICONS): $(MAPPINGS) $(ICONS_TEMPLATE)
-	@gomplate -d data=$< -f $(ICONS_TEMPLATE) -o $@
-	@gofmt -w $@
+	$(GOMPLATE) -d data=$< -f $(ICONS_TEMPLATE) -o $@
+	$(GOFMT) -w $@
 
-generate: $(GENICONS)
+$(TESTINPUTS): $(MAPPINGS) $(TESTINPUTS_TEMPLATE)
+	$(GOMPLATE) -d data=$< -f $(TESTINPUTS_TEMPLATE) -o $@
+
+$(TESTGOLDENS_DIR)/%.golden: $(TESTINPUTS)
+	cat $< | ./$(BINARY) -f=nerd > $@
+
+$(TESTGOLDENS_DIR)/%_color.golden: $(TESTINPUTS)
+	cat $< | ./$(BINARY) -f=nerd -c > $@
+
+generate: $(GENICONS) $(TESTINPUTS)
 
 download: generate
-	@$(GO) mod download
+	$(GO) mod download
 
 lint: generate
-	@$(LINTER) run
+	$(LINTER) run
 
 build: download
-	@$(GO) build -o $(BINARY) .
+	$(GO) build -o $(BINARY) .
 
 test: download
-	@$(GO) test -cover ./...
+	$(GO) test -cover ./...
 
 cover: download
-	@$(GO) test -cover -coverprofile=coverage.out ./...
-	@$(GO) tool cover -func=coverage.out
+	$(GO) test -cover -coverprofile=coverage.out ./...
+	$(GO) tool cover -func=coverage.out
 	@rm coverage.out
 
+gengolden: build $(TESTGOLDENS)
+
 itest: build
-	@$(GO) test -v ./$(TEST_DIR)
+	$(GO) test -v ./$(TEST_DIR)
 
 bench: build
-	@$(GO) test -v -bench=. -benchtime=$(BENCHTIME) ./$(TEST_DIR)
+	$(GO) test -v -bench=. -benchtime=$(BENCHTIME) ./$(TEST_DIR)
 
 clean:
 	@rm -f $(BINARY)

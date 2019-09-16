@@ -1,3 +1,9 @@
+unknown
+somedir/test/unknown
+.unknown
+somedir/test/.unknown
+file.unknown
+somedir/test/file.unknown
 .3gp
 somedir/test/.3gp
 file.3gp
@@ -60,6 +66,8 @@ file.bmp
 somedir/test/file.bmp
 .bower.json
 somedir/test/.bower.json
+file.bower.json
+somedir/test/file.bower.json
 .bowerrc
 somedir/test/.bowerrc
 file.bowerrc
@@ -636,8 +644,6 @@ somedir/test/file.zsh
 somedir/test/.zshrc
 file.zshrc
 somedir/test/file.zshrc
-bower.json
-somedir/test/bower.json
 Dockerfile
 somedir/test/Dockerfile
 Gemfile
@@ -652,6 +658,8 @@ Procfile
 somedir/test/Procfile
 TODO
 somedir/test/TODO
+bower.json
+somedir/test/bower.json
 config.ru
 somedir/test/config.ru
 docker-compose.yml
@@ -670,9 +678,3 @@ karma.conf.js
 somedir/test/karma.conf.js
 karma.conf.ts
 somedir/test/karma.conf.ts
-unknown
-somedir/test/unknown
-.unknown
-somedir/test/.unknown
-file.unknown
-somedir/test/file.unknown
