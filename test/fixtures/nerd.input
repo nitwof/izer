@@ -654,6 +654,8 @@ Gulpfile.js
 somedir/test/Gulpfile.js
 LICENSE
 somedir/test/LICENSE
+Makefile
+somedir/test/Makefile
 Procfile
 somedir/test/Procfile
 TODO

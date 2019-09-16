@@ -169,6 +169,7 @@
     "Gruntfile.js":       { "symbol": "\uE611", "color": 208 },
     "Gulpfile.js":        { "symbol": "\uE610", "color": 1 },
     "LICENSE":            { "symbol": "\uE60A", "color": 3 },
+    "Makefile":           { "symbol": "\uE615", "color": 3 },
     "Procfile":           { "symbol": "\uE607", "color": 141 },
     "TODO":               { "symbol": "\uF634", "color": 75 },
     "bower.json":         { "symbol": "\uE61A", "color": 208 },

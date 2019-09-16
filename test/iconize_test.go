@@ -14,32 +14,34 @@ import (
 )
 
 var tests = []struct {
-	name           string
-	args           []string
-	goldenFilename string
+	name          string
+	args          []string
+	inputFixture  string
+	goldenFixture string
 }{
-	{"Nerd", []string{"-f=nerd"}, "nerd.golden"},
-	{"NerdColor", []string{"-f=nerd", "-c"}, "nerd_color.golden"},
+	{"Nerd", []string{"-f=nerd"}, "nerd.input", "nerd.golden"},
+	{"NerdColor", []string{"-f=nerd", "-c"}, "nerd.input", "nerd_color.golden"},
 }
 
 func TestIconizeStdin(t *testing.T) {
 	binary, err := getBinary()
 	require.NoError(t, err, "Cannot get binary path")
 
-	input, err := loadFixture("input")
-	require.NoErrorf(t, err, "Cannot load fixture %s", "input")
-
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			input, err := loadFixture(tt.inputFixture)
+			require.NoErrorf(t, err, "Cannot load fixture %s", tt.inputFixture)
+
+			golden, err := loadFixture(tt.goldenFixture)
+			require.NoErrorf(t, err, "Cannot load fixture %s", tt.goldenFixture)
+
 			cmd := exec.Command(binary, tt.args...)
 			cmd.Stdin = bytes.NewReader(input)
 
 			result, err := cmd.Output()
 			require.NoErrorf(t, err, "Cannot execute binary %s", binary)
 
-			golden, err := loadFixture(tt.goldenFilename)
-			assert.NoErrorf(t, err, "Cannot load fixture %s", tt.goldenFilename)
 			assert.Equal(t, string(golden), string(result))
 		})
 	}
@@ -49,19 +51,19 @@ func TestIconizeArgs(t *testing.T) {
 	binary, err := getBinary()
 	require.NoError(t, err, "Cannot get binary path")
 
-	input, err := loadFixture("input")
-	require.NoErrorf(t, err, "Cannot load fixture %s", "input")
-
-	inputLines := strings.Split(string(input), "\n")
-	inputLines = inputLines[0 : len(inputLines)-1]
-
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			golden, err := loadFixture(tt.goldenFilename)
-			assert.NoErrorf(t, err, "Cannot load fixture %s", tt.goldenFilename)
+			input, err := loadFixture(tt.inputFixture)
+			require.NoErrorf(t, err, "Cannot load fixture %s", tt.inputFixture)
 
+			golden, err := loadFixture(tt.goldenFixture)
+			assert.NoErrorf(t, err, "Cannot load fixture %s", tt.goldenFixture)
+
+			inputLines := strings.Split(string(input), "\n")
+			inputLines = inputLines[0 : len(inputLines)-1]
 			args := append(tt.args, inputLines...)
+
 			cmd := exec.Command(binary, args...)
 
 			result, err := cmd.Output()

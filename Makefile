@@ -29,17 +29,17 @@ $(TESTINPUTS): $(MAPPINGS) $(TESTINPUTS_TEMPLATE)
 	$(GOMPLATE) -d data=$< -f $(TESTINPUTS_TEMPLATE) -o $@
 
 $(TESTGOLDENS_DIR)/%.golden: $(TESTINPUTS)
-	cat $< | ./$(BINARY) -f=nerd > $@
+	cat $< | ./$(BINARY) -f=$(<F:%.input=%) > $@
 
 $(TESTGOLDENS_DIR)/%_color.golden: $(TESTINPUTS)
-	cat $< | ./$(BINARY) -f=nerd -c > $@
+	cat $< | ./$(BINARY) -f=$(<F:%.input=%) -c > $@
 
 generate: $(GENICONS) $(TESTINPUTS)
 
-download: generate
+download: $(GENICONS)
 	$(GO) mod download
 
-lint: generate
+lint: $(GENICONS)
 	$(LINTER) run
 
 build: download
