@@ -5,6 +5,8 @@ somedir/test/unknown
 somedir/test/.unknown
 file.unknown
 somedir/test/file.unknown
+test
+test/fixtures
 {{- range $key := (.filetypes | coll.Keys | coll.Sort) }}
 {{ $key }}
 somedir/test/{{ $key }}

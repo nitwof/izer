@@ -1,7 +1,7 @@
 {
   "font": "nerd",
   "default": { "symbol": "\uE612", "color": 255 },
-  "directory": { "symbol": "\uE613", "color": 255 },
+  "directory": { "symbol": "\uE613", "color": 152 },
   "filetypes": {
     ".3gp":               { "symbol": "\uF001", "color": 148 },
     ".DS_Store":          { "symbol": "\uF179", "color": 8 },

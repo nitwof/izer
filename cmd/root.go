@@ -8,42 +8,36 @@ import (
 
 	"iconizer/icons"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/spf13/cobra"
 )
 
-const (
-	shiftFg = 16
-	flagFg  = (1 << 14)
-)
-
-var font string
-var color bool
-var supportedFonts string
+var fontName string
+var useColors bool
+var checkDirs bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "iconizer",
 	Short: "Add icons to files by filetypes.",
 	Run: func(cmd *cobra.Command, args []string) {
-		getIconFunc := icons.GetIconFunc(font)
-		if getIconFunc == nil {
+		font := icons.GetFontByName(fontName)
+		if font == nil {
 			fmt.Printf(
-				"Error: Font %s is unsupported. Supported fonts: %s\n",
-				font, supportedFonts,
+				"Error: Font '%s' is unsupported. Supported fonts: '%s'\n",
+				fontName, supportedFonts(),
 			)
-			cmd.Help() // nolint:errcheck
+			cmd.Help() // nolint:errcheck,gosec
 			os.Exit(1)
 		}
 
 		if len(args) > 0 {
 			for _, arg := range args {
-				printIconFilename(getIconFunc(arg), arg)
+				iconize(font, arg)
 			}
 		} else {
 			scanner := bufio.NewScanner(os.Stdin)
 			for scanner.Scan() {
-				printIconFilename(getIconFunc(scanner.Text()), scanner.Text())
+				iconize(font, scanner.Text())
 			}
 
 			if scanner.Err() != nil {
@@ -63,22 +57,41 @@ func Execute() {
 }
 
 func init() {
-	supportedFonts = strings.Join(icons.SupportedFonts(), ", ")
-
 	rootCmd.PersistentFlags().StringVarP(
-		&font, "font", "f", "",
-		fmt.Sprintf("Font to be used. Supported fonts: %s", supportedFonts),
+		&fontName, "font", "f", "",
+		fmt.Sprintf("Font to be used. Supported fonts: %s", supportedFonts()),
 	)
 	rootCmd.Flags().BoolVarP(
-		&color, "color", "c", false, "Enable colorful output",
+		&useColors, "color", "c", false, "Enable colorful output",
+	)
+	rootCmd.Flags().BoolVarP(
+		&checkDirs, "dir", "d", false,
+		"Enable icons for directories (Slows down the process due checking files)",
 	)
 }
 
-func printIconFilename(icon icons.Icon, filename string) {
-	if color {
-		color := (aurora.Color(icon.Color) << shiftFg) | flagFg
-		fmt.Printf("%s %s\n", aurora.Colorize(icon.Symbol, color), filename)
+func iconize(font icons.Font, filename string) {
+	if useColors {
+		fmt.Printf("%s %s\n", getIcon(font, filename).Colored(), filename)
 	} else {
-		fmt.Printf("%s %s\n", icon.Symbol, filename)
+		fmt.Printf("%s %s\n", getIcon(font, filename), filename)
 	}
+}
+
+func getIcon(font icons.Font, filename string) icons.Icon {
+	if icon := font.GetIcon(filename); !icon.IsEmpty() {
+		return icon
+	}
+
+	if checkDirs {
+		if stat, err := os.Stat(filename); err == nil && stat.IsDir() {
+			return font.DirIcon()
+		}
+	}
+
+	return font.DefaultIcon()
+}
+
+func supportedFonts() string {
+	return strings.Join(icons.StringFonts(), ", ")
 }

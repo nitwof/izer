@@ -19,13 +19,18 @@ var tests = []struct {
 	inputFixture  string
 	goldenFixture string
 }{
-	{"Nerd", []string{"-f=nerd"}, "nerd.input", "nerd.golden"},
-	{"NerdColor", []string{"-f=nerd", "-c"}, "nerd.input", "nerd_color.golden"},
+	{"Nerd", []string{"-f=nerd"}, "nerd/iconize.input", "nerd/iconize.golden"},
+	{"NerdColor", []string{"-f=nerd", "-c"}, "nerd/iconize.input", "nerd/iconize_color.golden"},
+	{"NerdDir", []string{"-f=nerd", "-d"}, "nerd/iconize.input", "nerd/iconize_dir.golden"},
+	{"NerdDirColor", []string{"-f=nerd", "-c", "-d"}, "nerd/iconize.input", "nerd/iconize_dir_color.golden"},
 }
 
 func TestIconizeStdin(t *testing.T) {
 	binary, err := getBinary()
 	require.NoError(t, err, "Cannot get binary path")
+
+	projectPath, err := filepath.Abs("..")
+	require.NoError(t, err, "Cannot get project path")
 
 	for _, tt := range tests {
 		tt := tt
@@ -38,6 +43,7 @@ func TestIconizeStdin(t *testing.T) {
 
 			cmd := exec.Command(binary, tt.args...)
 			cmd.Stdin = bytes.NewReader(input)
+			cmd.Dir = projectPath
 
 			result, err := cmd.Output()
 			require.NoErrorf(t, err, "Cannot execute binary %s", binary)
@@ -50,6 +56,9 @@ func TestIconizeStdin(t *testing.T) {
 func TestIconizeArgs(t *testing.T) {
 	binary, err := getBinary()
 	require.NoError(t, err, "Cannot get binary path")
+
+	projectPath, err := filepath.Abs("..")
+	require.NoError(t, err, "Cannot get project path")
 
 	for _, tt := range tests {
 		tt := tt
@@ -65,6 +74,7 @@ func TestIconizeArgs(t *testing.T) {
 			args := append(tt.args, inputLines...)
 
 			cmd := exec.Command(binary, args...)
+			cmd.Dir = projectPath
 
 			result, err := cmd.Output()
 			require.NoErrorf(t, err, "Cannot execute binary %s", binary)
@@ -75,11 +85,11 @@ func TestIconizeArgs(t *testing.T) {
 }
 
 func loadFixture(name string) ([]byte, error) {
-	file, err := os.Open(filepath.Join("fixtures", name))
+	file, err := os.Open(filepath.Join("fixtures", filepath.Clean(name)))
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer file.Close() // nolint:errcheck
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {

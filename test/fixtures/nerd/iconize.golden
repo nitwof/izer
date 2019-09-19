@@ -4,6 +4,8 @@
  somedir/test/.unknown
  file.unknown
  somedir/test/file.unknown
+ test
+ test/fixtures
  .3gp
  somedir/test/.3gp
  file.3gp

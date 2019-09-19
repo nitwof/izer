@@ -1,11 +1,10 @@
 MAPPINGS_DIR = mappings
 GENICONS_DIR = icons
-ICONS_TEMPLATE = icons/icons.go.tmpl
+FONT_TEMPLATE = icons/font.go.tmpl
 BINARY = iconizer
 TEST_DIR = test
-TESTINPUTS_TEMPLATE = test/fixtures/input.tmpl
-TESTINPUTS_DIR = test/fixtures
-TESTGOLDENS_DIR = test/fixtures
+FIXTURES_DIR = $(TEST_DIR)/fixtures
+TESTINPUT_TEMPLATE = $(FIXTURES_DIR)/input.tmpl
 
 GO = go
 GOFMT = gofmt
@@ -14,25 +13,38 @@ LINTER = golangci-lint
 BENCHTIME = 10x
 
 MAPPINGS = $(wildcard $(MAPPINGS_DIR)/*_map.json)
-GENICONS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(GENICONS_DIR)/%_icons.go)
-TESTINPUTS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(TESTINPUTS_DIR)/%.input)
-TESTGOLDENS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(TESTGOLDENS_DIR)/%.golden) \
-							$(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(TESTGOLDENS_DIR)/%_color.golden)
+GENICONS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(GENICONS_DIR)/%_font.go)
+TESTINPUTS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(FIXTURES_DIR)/%/iconize.input)
+TESTGOLDENS = $(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(FIXTURES_DIR)/%/iconize.golden) \
+							$(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(FIXTURES_DIR)/%/iconize_color.golden) \
+							$(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(FIXTURES_DIR)/%/iconize_dir.golden) \
+							$(MAPPINGS:$(MAPPINGS_DIR)/%_map.json=$(FIXTURES_DIR)/%/iconize_dir_color.golden)
 
 default: build
 
-$(GENICONS): $(MAPPINGS) $(ICONS_TEMPLATE)
-	$(GOMPLATE) -d data=$< -f $(ICONS_TEMPLATE) -o $@
+$(GENICONS): $(MAPPINGS) $(FONT_TEMPLATE)
+	$(GOMPLATE) -d data=$< -f $(FONT_TEMPLATE) -o $@
 	$(GOFMT) -w $@
 
-$(TESTINPUTS): $(MAPPINGS) $(TESTINPUTS_TEMPLATE)
-	$(GOMPLATE) -d data=$< -f $(TESTINPUTS_TEMPLATE) -o $@
+$(TESTINPUTS): $(MAPPINGS) $(TESTINPUT_TEMPLATE)
+	@mkdir -p $(@D)
+	$(GOMPLATE) -d data=$< -f $(TESTINPUT_TEMPLATE) -o $@
 
-$(TESTGOLDENS_DIR)/%.golden: $(TESTINPUTS)
-	cat $< | ./$(BINARY) -f=$(<F:%.input=%) > $@
+$(FIXTURES_DIR)/%/iconize.golden: $(FIXTURES_DIR)/%/iconize.input
+	@mkdir -p $(@D)
+	(cat $< | ./$(BINARY) -f=$*) > $@
 
-$(TESTGOLDENS_DIR)/%_color.golden: $(TESTINPUTS)
-	cat $< | ./$(BINARY) -f=$(<F:%.input=%) -c > $@
+$(FIXTURES_DIR)/%/iconize_color.golden: $(FIXTURES_DIR)/%/iconize.input
+	@mkdir -p $(@D)
+	(cat $< | ./$(BINARY) -f=$* -c) > $@
+
+$(FIXTURES_DIR)/%/iconize_dir.golden: $(FIXTURES_DIR)/%/iconize.input
+	@mkdir -p $(@D)
+	(cat $< | ./$(BINARY) -f=$* -d) > $@
+
+$(FIXTURES_DIR)/%/iconize_dir_color.golden: $(FIXTURES_DIR)/%/iconize.input
+	@mkdir -p $(@D)
+	(cat $< | ./$(BINARY) -f=$* -d -c) > $@
 
 generate: $(GENICONS) $(TESTINPUTS)
 
@@ -53,7 +65,7 @@ cover: download
 	$(GO) tool cover -func=coverage.out
 	@rm coverage.out
 
-gengolden: build $(TESTGOLDENS)
+golden: build $(TESTGOLDENS)
 
 itest: build
 	$(GO) test -v ./$(TEST_DIR)
@@ -64,4 +76,4 @@ bench: build
 clean:
 	@rm -f $(BINARY)
 
-.PHONY: default generate download lint test cover build itest bench clean
+.PHONY: default generate download lint test cover golden build itest bench clean
