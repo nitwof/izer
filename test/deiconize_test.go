@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -11,26 +10,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var iconizeTests = []struct {
+var deiconizeTests = []struct {
 	name          string
 	args          []string
 	inputFixture  string
 	goldenFixture string
 }{
-	{"Nerd", []string{"-f=nerd"}, "nerd/iconize.input", "nerd/iconize.golden"},
-	{"NerdColor", []string{"-f=nerd", "-c"}, "nerd/iconize.input", "nerd/iconize_color.golden"},
-	{"NerdDir", []string{"-f=nerd", "-d"}, "nerd/iconize.input", "nerd/iconize_dir.golden"},
-	{"NerdDirColor", []string{"-f=nerd", "-c", "-d"}, "nerd/iconize.input", "nerd/iconize_dir_color.golden"},
+	{"Nerd", []string{}, "nerd/deiconize.input", "nerd/deiconize.golden"},
+	{"NerdColor", []string{}, "nerd/deiconize_color.input", "nerd/deiconize.golden"},
+	{"NerdDir", []string{}, "nerd/deiconize_dir.input", "nerd/deiconize.golden"},
+	{"NerdDirColor", []string{}, "nerd/deiconize_dir_color.input", "nerd/deiconize.golden"},
 }
 
-func TestIconizeStdin(t *testing.T) {
+func TestDeiconizeStdin(t *testing.T) {
 	binary, err := getBinary()
 	require.NoError(t, err, "Cannot get binary path")
 
-	projectPath, err := filepath.Abs("..")
-	require.NoError(t, err, "Cannot get project path")
-
-	for _, tt := range iconizeTests {
+	for _, tt := range deiconizeTests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			input, err := loadFixture(tt.inputFixture)
@@ -39,10 +35,9 @@ func TestIconizeStdin(t *testing.T) {
 			golden, err := loadFixture(tt.goldenFixture)
 			require.NoErrorf(t, err, "Cannot load fixture %s", tt.goldenFixture)
 
-			cmdArgs := append([]string{"iconize"}, tt.args...)
+			cmdArgs := append([]string{"deiconize"}, tt.args...)
 			cmd := exec.Command(binary, cmdArgs...)
 			cmd.Stdin = bytes.NewReader(input)
-			cmd.Dir = projectPath
 
 			result, err := cmd.Output()
 			require.NoErrorf(t, err, "Cannot execute binary %s", binary)
@@ -52,14 +47,11 @@ func TestIconizeStdin(t *testing.T) {
 	}
 }
 
-func TestIconizeArgs(t *testing.T) {
+func TestDeiconizeArgs(t *testing.T) {
 	binary, err := getBinary()
 	require.NoError(t, err, "Cannot get binary path")
 
-	projectPath, err := filepath.Abs("..")
-	require.NoError(t, err, "Cannot get project path")
-
-	for _, tt := range iconizeTests {
+	for _, tt := range deiconizeTests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			input, err := loadFixture(tt.inputFixture)
@@ -71,9 +63,8 @@ func TestIconizeArgs(t *testing.T) {
 			inputLines := strings.Split(string(input), "\n")
 			inputLines = inputLines[0 : len(inputLines)-1]
 
-			cmdArgs := append([]string{"iconize"}, append(tt.args, inputLines...)...)
+			cmdArgs := append([]string{"deiconize"}, append(tt.args, inputLines...)...)
 			cmd := exec.Command(binary, cmdArgs...)
-			cmd.Dir = projectPath
 
 			result, err := cmd.Output()
 			require.NoErrorf(t, err, "Cannot execute binary %s", binary)

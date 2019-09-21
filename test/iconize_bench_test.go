@@ -34,11 +34,14 @@ func BenchmarkIconize(b *testing.B) {
 		len(input)/1024.0, bytes.Count(input, []byte("\n")),
 	)
 
-	for _, tt := range tests {
+	for _, tt := range iconizeTests {
 		tt := tt
 		b.Run(tt.name, func(b *testing.B) {
+			cmdArgs := append([]string{"iconize"}, tt.args...)
+
+			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				cmd := exec.Command(binary, tt.args...)
+				cmd := exec.Command(binary, cmdArgs...)
 				cmd.Stdin = bytes.NewReader(input)
 				cmd.Dir = projectPath
 

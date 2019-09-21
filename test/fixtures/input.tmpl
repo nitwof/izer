@@ -1,19 +1,50 @@
 {{- with (datasource "data") -}}
-unknown
-somedir/test/unknown
-.unknown
-somedir/test/.unknown
-file.unknown
-somedir/test/file.unknown
-test
-test/fixtures
-{{- range $key := (.filetypes | coll.Keys | coll.Sort) }}
-{{ $key }}
-somedir/test/{{ $key }}
+{{- $useIcons := env.Getenv "ICONS" -}}
+{{- $useColors := env.Getenv "COLORS" -}}
+{{- $useDirIcons := env.Getenv "DIRICONS" -}}
+
+{{- $defaultPrefix := "" -}}
+{{- if $useIcons -}}
+  {{- if $useColors -}}
+    {{- $defaultPrefix = (printf "\u001b[38;5;%dm%s\u001b[0m " .default.color .default.symbol) -}}
+  {{- else -}}
+    {{- $defaultPrefix = (printf "%s " .default.symbol) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $dirPrefix := $defaultPrefix -}}
+{{- if and $useIcons $useDirIcons -}}
+  {{- if $useColors -}}
+    {{- $dirPrefix = (printf "\u001b[38;5;%dm%s\u001b[0m " .directory.color .directory.symbol) -}}
+  {{- else -}}
+    {{- $dirPrefix = (printf "%s " .directory.symbol) -}}
+  {{- end -}}
+{{- end -}}
+
+{{ $defaultPrefix }}unknown
+{{ $defaultPrefix }}somedir/test/unknown
+{{ $defaultPrefix }}.unknown
+{{ $defaultPrefix }}somedir/test/.unknown
+{{ $defaultPrefix }}file.unknown
+{{ $defaultPrefix }}somedir/test/file.unknown
+{{ $dirPrefix }}test
+{{ $dirPrefix }}test/fixtures
+
+{{- range $key, $value := .filetypes -}}
+{{- $prefix := "" -}}
+{{- if and $useIcons -}}
+  {{- if $useColors -}}
+    {{- $prefix = printf "\u001b[38;5;%dm%s\u001b[0m " $value.color $value.symbol -}}
+  {{- else -}}
+    {{- $prefix = printf "%s " $value.symbol -}}
+  {{- end -}}
+{{- end }}
+{{ $prefix }}{{ $key }}
+{{ $prefix }}somedir/test/{{ $key }}
 
 {{- if $key | strings.HasPrefix "." }}
-file{{ $key }}
-somedir/test/file{{ $key }}
+{{ $prefix }}file{{ $key }}
+{{ $prefix }}somedir/test/file{{ $key }}
 {{- end }}
 
 {{- end }}
