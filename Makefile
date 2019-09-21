@@ -10,6 +10,7 @@ GO = go
 GOFMT = gofmt
 GOMPLATE = gomplate
 LINTER = golangci-lint
+GORELEASER = goreleaser
 BENCHTIME = 10x
 
 MAPPINGS = $(wildcard $(MAPPINGS_DIR)/*_map.json)
@@ -93,4 +94,7 @@ bench: build $(TESTINPUTS)
 clean:
 	@rm -f $(BINARY)
 
-.PHONY: default generate download lint build test cover goldens itest bench clean
+release:
+	$(GORELEASER) release --rm-dist
+
+.PHONY: default generate download lint build test cover goldens itest bench clean release
