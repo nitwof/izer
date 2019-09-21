@@ -4,6 +4,8 @@ izer is a command-line tool for adding icons to filenames.
 
 izer is heavily inspired by [VimDevIcons](https://github.com/ryanoasis/vim-devicons).
 
+<img src="images/preview.png" width=700>
+
 ## Pros
 
 - Portable, no dependencies
