@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"iconizer/icons"
+	"github.com/NightWolf007/izer/icons"
 
 	"github.com/spf13/cobra"
 )

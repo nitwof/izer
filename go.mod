@@ -1,4 +1,4 @@
-module iconizer
+module github.com/NightWolf007/izer
 
 go 1.13
 

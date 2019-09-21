@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"iconizer/icons"
+	"github.com/NightWolf007/izer/icons"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +21,7 @@ var iconizeCmd = &cobra.Command{
 		font := icons.GetFontByName(iconizeFontName)
 		if font == nil {
 			fmt.Printf(
-				"Error: Font '%s' is unsupported. See: iconizer fonts",
+				"Error: Font '%s' is unsupported. See: izer fonts",
 				iconizeFontName,
 			)
 			cmd.Help() // nolint:errcheck,gosec
@@ -48,7 +48,7 @@ var iconizeCmd = &cobra.Command{
 func init() {
 	iconizeCmd.Flags().StringVarP(
 		&iconizeFontName, "font", "f", "",
-		fmt.Sprintf("Font to be used. See: iconizer fonts"),
+		fmt.Sprintf("Font to be used. See: izer fonts"),
 	)
 	iconizeCmd.Flags().BoolVarP(
 		&iconizeUseColors, "color", "c", false, "Enable colorful output",

@@ -1,7 +1,7 @@
 MAPPINGS_DIR = mappings
 FONTS_DIR = icons
 FONT_TEMPLATE = icons/font.go.tmpl
-BINARY = iconizer
+BINARY = izer
 TEST_DIR = test
 FIXTURES_DIR = $(TEST_DIR)/fixtures
 TESTINPUT_TEMPLATE = $(FIXTURES_DIR)/input.tmpl

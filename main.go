@@ -1,7 +1,7 @@
 package main
 
 import (
-	"iconizer/cmd"
+	"github.com/NightWolf007/izer/cmd"
 )
 
 func main() {

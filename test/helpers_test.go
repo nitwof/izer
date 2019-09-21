@@ -28,9 +28,9 @@ func getBinary() (string, error) {
 	}
 
 	projectPath := filepath.Dir(cwd)
-	binaryPath := os.Getenv("ICONIZER")
+	binaryPath := os.Getenv("IZER")
 	if binaryPath == "" {
-		binaryPath = "iconizer"
+		binaryPath = "izer"
 	}
 
 	return filepath.Join(projectPath, binaryPath), nil

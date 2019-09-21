@@ -1,6 +1,7 @@
 # izer
 
 izer is a command-line tool for adding icons to filenames.
+
 izer is heavily inspired by [VimDevIcons](https://github.com/ryanoasis/vim-devicons).
 
 ## Pros
@@ -31,7 +32,7 @@ BenchmarkIconize/NerdDirColor-8               10        2202257278 ns/op
 ### Using Go
 
 ```shell
-go get -u https://github.com/NightWolf007/izer
+go get -u github.com/NightWolf007/izer
 ```
 
 ## Usage
@@ -68,6 +69,7 @@ find . | izer iconize -f=nerd
 
 Checking that filename is directory or not slows down the iconization process.
 Thus, by default izer handles directories as a simple files.
+
 To enable directory icons use `-d` opton.
 
 ```shell
