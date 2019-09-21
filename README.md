@@ -31,6 +31,11 @@ BenchmarkIconize/NerdDirColor-8               10        2202257278 ns/op
 
 ## Installation
 
+### From binaries
+
+The [release page](https://github.com/NightWolf007/izer/releases) includes
+precompiled binaries for Linux, FreeBSD, macOS and Windows.
+
 ### Using Go
 
 ```shell
