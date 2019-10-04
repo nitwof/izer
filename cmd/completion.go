@@ -38,7 +38,7 @@ add this to your shell rc file:
 			}
 		case "zsh":
 			if err := rootCmd.GenZshCompletion(os.Stdout); err != nil {
-				fmt.Printf("Cannot generate bash completion: %v\n", err)
+				fmt.Printf("Cannot generate zsh completion: %v\n", err)
 				os.Exit(1)
 			}
 		}
