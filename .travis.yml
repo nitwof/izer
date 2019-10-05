@@ -1,0 +1,15 @@
+---
+language: go
+go: '1.13.x'
+env:
+  - GO111MODULE=on
+before_install:
+  - 'go get -u github.com/hairyhenderson/gomplate/cmd/gomplate'
+jobs:
+  include:
+    - stage: lint
+      before_install:
+        - 'go get -u github.com/golangci/golangci-lint/cmd/golangci-lint'
+      script: make lint
+    - stage: test
+      script: make && make test
