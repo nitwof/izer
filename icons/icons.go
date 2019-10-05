@@ -1,3 +1,4 @@
+// Package icons implements logic of receiving icons for filetypes.
 package icons
 
 import (
