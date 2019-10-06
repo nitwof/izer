@@ -1,5 +1,7 @@
 # izer
 
+[![Build Status](https://travis-ci.org/NightWolf007/izer.svg?branch=master)](https://travis-ci.org/NightWolf007/izer)
+
 izer is a command-line tool for adding icons to filenames.
 
 izer is heavily inspired by [VimDevIcons](https://github.com/ryanoasis/vim-devicons).
