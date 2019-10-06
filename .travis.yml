@@ -1,0 +1,24 @@
+---
+language: go
+go: '1.13.x'
+env:
+  - GO111MODULE=on
+before_install:
+  - GO111MODULE=off go get github.com/hairyhenderson/gomplate/cmd/gomplate
+jobs:
+  include:
+    - stage: lint
+      before_script:
+        - go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.19.1
+      script:
+        - golangci-lint run
+    - stage: test
+      before_script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
+      script:
+        - make
+        - go test -cover -coverprofile=c.out ./...
+      after_script:
+        - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
