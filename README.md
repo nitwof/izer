@@ -1,8 +1,7 @@
 # izer
 
-[![Build Status](https://travis-ci.org/NightWolf007/izer.svg?branch=master)](https://travis-ci.org/NightWolf007/izer)
-[![Maintainability](https://api.codeclimate.com/v1/badges/6f197320725e4dacb0d5/maintainability)](https://codeclimate.com/github/NightWolf007/izer/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6f197320725e4dacb0d5/test_coverage)](https://codeclimate.com/github/NightWolf007/izer/test_coverage)
+[![Build Status](https://github.com/NightWolf007/izer/workflows/build/badge.svg)](https://github.com/NightWolf007/izer)
+[![codecov](https://codecov.io/gh/NightWolf007/izer/branch/master/graph/badge.svg)](https://codecov.io/gh/NightWolf007/izer)
 
 izer is a command-line tool for adding icons to filenames.
 
