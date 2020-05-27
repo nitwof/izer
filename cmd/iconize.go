@@ -4,11 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/NightWolf007/izer/icons"
 
 	"github.com/spf13/cobra"
 )
+
+// Code extracted from https://github.com/acarl005/stripansi
+const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
+
+var re = regexp.MustCompile(ansi)
 
 var iconizeFontName string
 var iconizeUseColors bool
@@ -63,7 +69,7 @@ func init() {
 
 func iconize(font icons.Font, filename string) {
 	if iconizeUseColors {
-		fmt.Printf("%s %s\n", getIcon(font, filename).Colored(), filename)
+		fmt.Printf("%s %s\n", getIcon(font, re.ReplaceAllString(filename, "")).Colored(), filename)
 	} else {
 		fmt.Printf("%s %s\n", getIcon(font, filename), filename)
 	}
